@@ -9,13 +9,20 @@ buildscript {
         google()
     }
     dependencies {
-        
 
     }
 }
 
+plugins {
+    id 'java-library'
+    id 'jacoco'
+    id 'checkstyle'
+}
+
 allprojects {
     apply plugin: "eclipse"
+    
+    apply plugin: "jacoco"
 
     version = '1.0'
     ext {
@@ -41,6 +48,8 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java-library"
+    
+    apply plugin: "jacoco"
 
 
     dependencies {
@@ -53,10 +62,28 @@ project(":desktop") {
 
 project(":core") {
     apply plugin: "java-library"
+    
+    apply plugin: "jacoco"
 
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        
+        implementation 'org.javatuples:javatuples:1.2'
+        testImplementation(platform('org.junit:junit-bom:5.9.2'))
+        testImplementation('org.junit.jupiter:junit-jupiter')
+    }
+
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+        jacocoTestReport {
+            reports {
+                xml.required = false
+                csv.required = false
+                html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+            }
+        }
     }
 }
